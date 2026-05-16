@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reporte Técnico</title>
+    <style>
+        :root {
+            --ws-green: #25D366;
+            --ws-dark: #075E54;
+            --bg: #f4f7f6;
+            --accent: #128C7E;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 15px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: auto;
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: var(--ws-dark);
+            font-size: 22px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .section-label {
+            display: block;
+            font-weight: 700;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #eef0f2;
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .info-panel {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .grid-checks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .check-card {
+            background: #f8f9fa;
+            border: 2px solid #eee;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .radio-box {
+            display: flex;
+            gap: 15px;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-option input {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            background: #f8f9fa;
+            border: 2px solid #eee;
+            padding: 12px;
+            text-align: center;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .radio-option input:checked+label {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .cat-btn {
+            width: 100%;
+            background: #fff;
+            border: 2px solid #eef0f2;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            border-radius: 12px;
+            margin-top: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .cat-content {
+            display: none;
+            padding: 10px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .mat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .btn-qty {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: none;
+            background: #e0e0e0;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-qty.plus {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-main {
+            width: 100%;
+            background: var(--ws-green);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Reporte de Trabajo</h1>
+        </div>
+        <label class="section-label">Cuadrilla Responsable</label>
+        <select id="cuadrilla" onchange="checkOtraCuadrilla()">
+            <option value="">Seleccione técnico...</option>
+            <option value="Arnaldo/Catalino">Arnaldo/Catalino</option>
+            <option value="Fernando/Jacobo">Fernando/Jacobo</option>
+            <option value="Jose/Demian">Jose/Demian</option>
+            <option value="Fabian/Juan">Fabian/Juan</option>
+            <option value="Solutionlan">Solutionlan</option>
+            <option value="OTRO">MÁS (+)</option>
+        </select>
+        <input type="text" id="nuevaCuadrilla" placeholder="Nombre de la cuadrilla"
+            style="display:none; margin-top:10px;">
+
+        <label class="section-label">Número de Parada</label>
+        <input type="number" id="numParada" placeholder="Número de Parada (PS)" oninput="updateParadaInfo()">
+        <div id="paradaPanel" class="info-panel" style="display:none">
+            <div id="infoDir" style="font-weight: bold; color: #1967d2;"></div>
+            <div id="infoLoc" style="font-size: 13px; color: #555; margin-top: 5px;"></div>
+        </div>
+
+        <label class="section-label">¿Se acudió por una emergencia?</label>
+        <div class="radio-box" style="margin-bottom: 20px;">
+            <div class="radio-option"><input type="radio" name="emergencia" id="em_si" value="SÍ"><label
+                    for="em_si">SÍ</label></div>
+            <div class="radio-option"><input type="radio" name="emergencia" id="em_no" value="NO" checked><label
+                    for="em_no">NO</label></div>
+        </div>
+
+        <label class="section-label">Trabajo Realizado</label>
+        <div class="grid-checks">
+            <label class="check-card"><input type="checkbox" name="trabajo" value="General"> General</label>
+            <label class="check-card"><input type="checkbox" name="trabajo" value="Estético"> Estético</label>
+            <label class="check-card"><input type="checkbox" name="trabajo" value="Eléctrico"> Eléctrico</label>
+            <label class="check-card"><input type="checkbox" name="trabajo" value="Datos"> Datos</label>
+            <label class="check-card" style="grid-column: span 2;"><input type="checkbox" name="trabajo"
+                    value="Estructural"> Estructural</label>
+        </div>
+
+        <label class="section-label">Se obtuvo respuesta</label>
+        <div class="radio-box">
+            <div class="radio-option"><input type="radio" name="av" id="av_si" value="SÍ"><label for="av_si">SÍ</label>
+            </div>
+            <div class="radio-option"><input type="radio" name="av" id="av_no" value="NO"><label for="av_no">NO</label>
+            </div>
+        </div>
+
+        <label class="section-label">Materiales Utilizados</label>
+        <div id="materiales-seccion"></div>
+
+        <label class="section-label">Observaciones Adicionales</label>
+        <textarea id="obs" placeholder="Reporte de daños, novedades o faltantes..."></textarea>
+
+        <button class="btn-main" onclick="generarReporte()">🚀 ENVIAR A WHATSAPP</button>
+    </div>
+
+    <script>
+        let baseDeDatos = [];
+        let paradaEncontrada = null;
+
+        const categorias = {
+            "🌐 CONECTIVIDAD": ["BOTON PULSADOR", "CABLES UTP 4 CANALES", "CABLES UTP 8 CANALES", "CAJA ESTANCA 15*20", "CAJA ESTANCA 30*30", "CAJA PARA DOMO", "CAMARA DOMO", "CONECTORES DE PVC 3/4", "ESTROBO", "INTERCOMUNICADOR", "SIRENAS", "SWICHT", "TAPA CAJA CONECTIVIDAD 22*25", "TIMER", "TRANSFORMADORES 12V", "TRANSFORMADORES 48V", "ZAPATILLAS", "TESTER"],
+            "⚡ ELECTRICIDAD": ["CABLE T/TALLER 2 X 1.5 MM IRAM", "CABLE T/TALLER 3 X 1.5 MM IRAM", "CAJA DIN IP54 4 POLOS 148X100X91", "CAÑO CORRUGADO", "CINTA EMBALAR", "CINTA AISLADORA 20M", "CINTA PELIGRO X 200 MTS", "DISYUNTOR TERMICO 2 X 25 AMP SICA", "FOTOCELULA 2000W F/ZOC", "JUEGO ZOCALO CABLEADO 20/40W", "LAMP LED BIPIN G9 220V 6W DIA", "LLAVE TERMICA 2 X 10 AMP SICA", "PRENSACABLE 3/4\" NYLON GRIS", "PRENSACABLE 7/8\" NYLON GRIS", "TUBO LED 18 W ECO VIDRIO DIA", "TUBO LED 9 W ECO VIDRIO DIA", "ZOCALO G9", "ZOCALO TUBOS FLUORESCENTES", "FICHAS HEMBRA COMUNES", "FICHAS MACHO COMUNES"],
+            "🛠️ FERRETERIA": ["ALAMBRE GALVANIZADO", "GRAMPAS", "ABRAZADERAS", "ARMAZON PARA CHUPETE", "AUTOPERF P/CHAPA 14 X 1 1/2 P/MECHA", "BORNERA PARA JABALINA", "CHAPA LISA 50 * 2.5 - TRASERO", "CHAPAS LISAS 0.90 * 1.22 - PUBLICIDAD", "CUTTER 18 MM METALICO C/FRENO", "DISCO CORTE 114 X 1.6 TYROLIT SECUR", "ELECTRODO 2.50 MM E-6013 X KG", "GANCHO RETRACTIL P/ESCALERA", "GUANTE MOTEADO", "JABALINA C/M 1/2 X 1.50 MTS", "LIJAS", "MECHA A/RAPIDO 5.00 M RECTIFICADO A002", "MECHA A/RAPIDO 8.00 M RECTIFICADO A002", "MORCETOS", "PRECINTO NYLON NEGRO 4.8 X 300 X 100", "PUERTA DE SEGURIDAD", "PUNTA PHILIPS 2 X 25 BOSCH", "PUNTA PHILIPS 2 X 50 KLEBER", "REMACHES RAPIDO 4.8MM X 35", "TORNILLOS T1 MECHA", "TORNILLOS T1 AGUJA", "TORNILLOS T2 MECHA"],
+            "🎨 PINTURERIA": ["CINTA AA ENMASCARAR AZUL 36 X 50 MTS", "PINCEL AFICIONADO Nº10", "PINCEL Nº 20 VIROLA (2\")", "PINCEL Nº 30 VIROLA (3\")", "RODILLO EPOXI Nº 10 - 1\"", "RODILLO POLIESTER MINI C/F Nº 5", "RODILLO POLIESTER MINI S/F Nº 8", "SINTETICO BRILLOPLAST MAX 4 LT BLANCO", "SINTETICO BRILLOPLAST MAX 20 LT AZUL TRAFUL", "SINTETICO NEGRO 3 EN 1 X 3.6 L CREMAR", "SINTETICO BRILLOPLAST MAX 20 LT BLANCO", "THINNER ORO SINTEPLAST 4 LT", "AGUARRAS RAPIRRAS X 4 LT"]
+            "🎨 PLOTEO": ["PARADAS SEGURAS", "INSTRUCTIVO BOTON", "NUMEROS TEL CHICOS", "FERNANDO ESPINOZA", "MUNICIPIO"]
+        };
+
+        async function cargarBaseDeDatos() {
+            const urlCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSHYsdSi_5qrFqM3Bj1sl5tOKgn6VbAdqAmTOgB49PVVhWeid0yeC5lur4aWmLtWg/pub?output=csv";
+            try {
+                const respuesta = await fetch(urlCSV);
+                const texto = await respuesta.text();
+                const filas = texto.split(/\r?\n/);
+                baseDeDatos = filas.map(fila => {
+                    let limpia = fila.replace(/"/g, '').trim();
+                    if (limpia.includes(';')) return limpia.split(';');
+                    if (limpia.includes('\t')) return limpia.split('\t');
+                    return limpia.split(',');
+                });
+            } catch (error) {
+                console.error("Error al cargar la base de datos:", error);
+            }
+        }
+
+        function renderMateriales() {
+            const seccion = document.getElementById("materiales-seccion");
+            let idContador = 0;
+            for (const [cat, lista] of Object.entries(categorias)) {
+                const btnCat = document.createElement("button");
+                btnCat.className = "cat-btn";
+                btnCat.innerHTML = `<span>${cat}</span><span>▼</span>`;
+                btnCat.onclick = (e) => {
+                    e.preventDefault();
+                    const content = btnCat.nextElementSibling;
+                    content.style.display = content.style.display === "block" ? "none" : "block";
+                };
+                const divContent = document.createElement("div");
+                divContent.className = "cat-content";
+                lista.forEach(mat => {
+                    idContador++;
+                    const row = document.createElement("div");
+                    row.className = "mat-row";
+                    row.innerHTML = `
+                    <span>${mat}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <button class="btn-qty" onclick="cambiarCant('${idContador}', -1, event)">-</button>
+                        <span id="cant-${idContador}" class="mat-cant" data-name="${mat}">0</span>
+                        <button class="btn-qty plus" onclick="cambiarCant('${idContador}', 1, event)">+</button>
+                    </div>`;
+                    divContent.appendChild(row);
+                });
+                seccion.appendChild(btnCat);
+                seccion.appendChild(divContent);
+            }
+        }
+
+        function cambiarCant(id, val, e) {
+            e.preventDefault();
+            const el = document.getElementById(`cant-${id}`);
+            let cant = parseInt(el.innerText) + val;
+            if (cant >= 0) el.innerText = cant;
+        }
+
+        function checkOtraCuadrilla() {
+            const val = document.getElementById("cuadrilla").value;
+            document.getElementById("nuevaCuadrilla").style.display = val === "OTRO" ? "block" : "none";
+        }
+
+        function updateParadaInfo() {
+            const num = document.getElementById("numParada").value.trim();
+            const panel = document.getElementById("paradaPanel");
+            paradaEncontrada = null;
+            if (!num) { panel.style.display = "none"; return; }
+
+            for (let i = 0; i < baseDeDatos.length; i++) {
+                const fila = baseDeDatos[i];
+                if (fila && fila.length > 1) {
+                    let celdaNumero = fila[0].trim();
+                    if (celdaNumero === num) {
+                        paradaEncontrada = {
+                            num: num,
+                            direccion: fila[4] ? fila[4].trim() : "Sin dirección",
+                            localidad: fila[5] ? fila[5].trim() : "Sin localidad",
+                            zona: fila[2] ? fila[2].trim() : "Sin zona",
+                            subzona: fila[3] ? fila[3].trim() : "Sin subzona",
+                            tipo: fila[6] ? fila[6].trim() : "Sin tipo",
+                            solicitud: fila[1] ? fila[1].trim() : "Sin solicitud"
+                        };
+                        break;
+                    }
+                }
+            }
+            if (paradaEncontrada) {
+                document.getElementById("infoDir").innerText = `Dirección: ${paradaEncontrada.direccion}`;
+                document.getElementById("infoLoc").innerHTML = `Localidad: ${paradaEncontrada.localidad}<br>Zona: ${paradaEncontrada.zona} (Subzona: ${paradaEncontrada.subzona})<br>Tipo: ${paradaEncontrada.tipo}<br>Solicitud: ${paradaEncontrada.solicitud}`;
+                panel.style.display = "block";
+            } else {
+                panel.style.display = "none";
+            }
+        }
+
+        function generarReporte() {
+            let cuadrilla = document.getElementById("cuadrilla").value;
+            if (cuadrilla === "OTRO") cuadrilla = document.getElementById("nuevaCuadrilla").value.trim();
+            if (!cuadrilla || !paradaEncontrada) { alert("Por favor complete cuadrilla y un número de parada válido."); return; }
+
+            let emergOpt = document.querySelector('input[name="emergencia"]:checked');
+            let emergenciaText = (emergOpt && emergOpt.value === "SÍ") ? "*Aviso:* Se asistió a este refugio de parada segura de forma prioritaria ante un reclamo técnico registrado.\n" : "";
+
+            let trabajos = [];
+            document.querySelectorAll('input[name="trabajo"]:checked').forEach(cb => trabajos.push(cb.value));
+            let avOpt = document.querySelector('input[name="av"]:checked');
+            let av = avOpt ? avOpt.value : "NO ESPECIFICA";
+
+            let materiales = [];
+            document.querySelectorAll(".mat-cant").forEach(el => {
+                let cant = parseInt(el.innerText);
+                if (cant > 0) {
+                    let nombre = el.getAttribute("data-name");
+                    materiales.push({ material: nombre, cantidad: cant });
+                }
+            });
+
+            let obs = document.getElementById("obs").value.trim();
+
+            let msj = `*REPORTE TÉCNICO DE MANTENIMIENTO*\n`;
+            msj += `*Responsable:* ${cuadrilla}\n`;
+            msj += `*Número de parada:* ${paradaEncontrada.num}\n`;
+            msj += `*Dirección:* ${paradaEncontrada.direccion}\n`;
+            msj += `*Localidad:* ${paradaEncontrada.localidad}\n`;
+            msj += `*Enlace al mapa:* https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(paradaEncontrada.direccion + ', ' + paradaEncontrada.localidad)}\n`;
+            msj += `*Zona:* ${paradaEncontrada.zona} (Subzona: ${paradaEncontrada.subzona})\n`;
+            msj += `*Tipo:* ${paradaEncontrada.tipo}\n`;
+            msj += `*Solicitud:* ${paradaEncontrada.solicitud}\n`;
+            if (emergenciaText) msj += `${emergenciaText}`;
+            msj += `*Trabajos Realizados:* ${trabajos.length > 0 ? trabajos.join(", ") : "Ninguno"}\n`;
+            msj += `*Se obtuvo respuesta:* ${av}\n`;
+
+            let textoMateriales = materiales.length > 0
+                ? materiales.map(m => {
+                    let esMetro = m.material.includes('CABLE') || m.material.includes('CINTA') || m.material.includes('ALAMBRE');
+                    let unidad = esMetro ? 'm' : 'u';
+                    // Se remueve cualquier comilla simple huérfana de la plantilla
+                    return `- ${m.cantidad} ${unidad} x ${m.material}`;
+                }).join("\n")
+                : "- Ninguno";
+
+            msj += `*Materiales Utilizados:*\n${textoMateriales}\n`;
+            msj += `*Observaciones / Daños:* ${obs ? obs : "Sin novedades"}\n`;
+            msj += `Se adjunta a continuación la evidencia fotográfica correspondiente al mantenimiento preventivo y correctivo realizado en el refugio.`;
+
+            // === ENVÍO A GOOGLE SHEETS ===
+            // Reemplaza esta URL con la tuya generada en Apps Script
+
+            const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyGIeTyelW2GSwNrHxwGAoYfPxgI5gZvCrXTpsrP6GsSympPnUQVz9jgIGUUgay0y9I/exec";
+
+            if (URL_APPS_SCRIPT !== "TU_URL_DE_APPS_SCRIPT_AQUI") {
+                let payload = {
+                    fecha: new Date().toLocaleDateString("es-AR") + " " + new Date().toLocaleTimeString("es-AR"),
+                    cuadrilla: cuadrilla,
+                    parada: paradaEncontrada.num || "",
+                    direccion: paradaEncontrada.direccion || "",
+                    localidad: paradaEncontrada.localidad || "",
+                    zona: paradaEncontrada.zona || "",
+                    subzona: paradaEncontrada.subzona || "",
+                    solicitud: paradaEncontrada.solicitud || "",
+                    tipo: paradaEncontrada.tipo || "",
+                    trabajos: trabajos.length > 0 ? trabajos.join(", ") : "Ninguno",
+                    emergencia: (emergOpt && emergOpt.value === "SÍ") ? "Sí" : "No",
+                    respuestaAV: av,
+                    materiales: materiales,
+                    observaciones: obs ? obs : "Sin novedades"
+                };
+
+                fetch(URL_APPS_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                }).catch(err => console.error("Error enviando a Sheets:", err));
+            }
+
+            // === ENVÍO A WHATSAPP ===
+            window.open('https://wa.me/?text=' + encodeURIComponent(msj), '_blank');
+        }
+
+        window.onload = async function () {
+            await cargarBaseDeDatos();
+            renderMateriales();
+        };
+    </script>
+</body>
+
+</html>
